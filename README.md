@@ -12,6 +12,7 @@ Shopping lists are saved/loaded from the same data file as used in the beginning
 
 ### Creating your own list
 In case you want to create your own list and port it into ShoppingHelper that way, you can simply list the names of all of the items in column A of a sheet. **Make sure you name the items exactly like they are named in the 'Data' sheet**. If you do not name it correctly, the item will not show up in the program as being part of the list. An example of a shopping list can be seen below:
+
 ![Shopping List example](/images/img2.png)
 
 ## Data Input
