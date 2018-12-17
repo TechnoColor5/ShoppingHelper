@@ -26,13 +26,65 @@ def output_items(item_list):
 		print("Name: " + i.name + " Avg: " + str(i.get_average()) + " Max: " + str(i.max_price)
 				+ " Min: " + str(i.min_price))
 
-def add_item():
+def add_item_to_master():
 	name = input("Please enter the name of the item you wish to add: ")
 	price = eval(input("Please enter the price for " + name + ": "))
 	check_item(name, price)
 
-def start_list():
-	shopping_list
+def add_to_shop_list(shop_list):
+	name = input("Please enter the item name: ")
+	for i in item_master:
+		if i.name == name:
+			shop_list.add_item(i)
+			return
+	print("Item not found")
+
+def remove_from_shop_list(shop_list):
+	name = input("Please enter the item name: ")
+	shop_list.remove_item(i)
+
+def shopping_menu():
+	shop_list = shopping_list()
+	while True:
+		print("Now editing shopping list:")
+		print("\t1. Add item to list")
+		print("\t2. Remove item from list")
+		print("\t3. Save list")
+		print("\t4. Output list")
+		print("\t0. Go Back")
+
+		try:
+			choice = eval(input("Please enter your choice: "))
+		except:
+			print("That is not a correct choice")
+			continue
+		print("\n--------------------\n")
+		if choice == 1:
+			add_to_shop_list(shop_list)
+		elif choice == 2:
+			remove_from_shop_list(shop_list)
+		elif choice == 3:
+			save_shop_list()
+		elif choice == 4:
+			print("Which do you want:")
+			print("\t1. Average prices")
+			print("\t2. Maximum prices")
+			print("\t3. Minimum prices")
+			try:
+				output_choice = eval(input("Please enter your choice: "))
+			except:
+				print("That is not a correct choice")
+				continue
+				
+			if output_choice == 1:
+				shop_list.output()
+			elif output_choice == 2:
+				shop_list.output_mode(0)
+			elif output_choice == 3:
+				shop_list.output_mode(1)
+		elif choice == 0:
+			return
+		print("\n--------------------\n")
 
 item_master = []
 save_file = False
@@ -59,14 +111,19 @@ while loop:
 	print("\t3. Output item list")
 	print("\t0. Quit")
 	#load a shopping list?
-	choice = eval(input("Please enter your choice: "))
+	try:
+		choice = eval(input("Please enter your choice: "))
+	except:
+		print("That is not a correct choice")
+		continue
 	print("\n--------------------\n")
 	if choice == 1:
-		add_item()
+		add_item_to_master()
 	elif choice == 2:
-		start_list()
+		shopping_menu()
 	elif choice == 3:
 		output_items(item_master)
 	elif choice == 0:
 		#save data here
 		loop = False
+	print("\n--------------------\n")
