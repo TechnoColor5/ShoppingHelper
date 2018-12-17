@@ -1,5 +1,6 @@
 from classes.item import item
 from classes.receipt import receipt
+from classes.shopping_list import shopping_list
 from datetime import date
 import openpyxl
 import os.path
@@ -29,6 +30,9 @@ def add_item():
 	name = input("Please enter the name of the item you wish to add: ")
 	price = eval(input("Please enter the price for " + name + ": "))
 	check_item(name, price)
+
+def start_list():
+	shopping_list
 
 item_master = []
 save_file = False
@@ -64,4 +68,5 @@ while loop:
 	elif choice == 3:
 		output_items(item_master)
 	elif choice == 0:
+		#save data here
 		loop = False
