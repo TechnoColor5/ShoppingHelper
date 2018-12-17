@@ -1,7 +1,7 @@
 from classes.item import item
 from classes.receipt import receipt
 from classes.shopping_list import shopping_list
-from datetime import date
+import datetime
 import openpyxl
 import os.path
 
@@ -43,8 +43,33 @@ def remove_from_shop_list(shop_list):
 	name = input("Please enter the item name: ")
 	shop_list.remove_item(i)
 
-def shopping_menu():
+def save_shop_list(shop_list):
+	sheet_name = "List" + str(len(wb.worksheets) + 1)
+	sheet = wb.create_sheet(sheet_name)
+	item_list = shop_list.item_list
+
+	for i in range(1, len(item_list) + 1):
+		sheet.cell(row=i, column=1, value=item_list[i - 1].name)
+
+def load_shop_list():
+	sheet_name = input("Please enter the name of the list: ")
 	shop_list = shopping_list()
+	try:
+		sheet = wb[sheet_name];
+	except:
+		print("That list does not exist")
+		return None
+	end = 'B' + str(sheet.max_row)
+	for row in sheet["A1":end]:
+		item_name = row[0].value;
+		for i in item_master:
+			if i.name == item_name:
+				shop_list.add_item(i)
+				break
+
+	return shop_list
+
+def shopping_menu(shop_list):
 	while True:
 		print("Now editing shopping list:")
 		print("\t1. Add item to list")
@@ -64,7 +89,7 @@ def shopping_menu():
 		elif choice == 2:
 			remove_from_shop_list(shop_list)
 		elif choice == 3:
-			save_shop_list()
+			save_shop_list(shop_list)
 		elif choice == 4:
 			print("Which do you want:")
 			print("\t1. Average prices")
@@ -72,10 +97,11 @@ def shopping_menu():
 			print("\t3. Minimum prices")
 			try:
 				output_choice = eval(input("Please enter your choice: "))
+				print("\n--------------------\n")
 			except:
 				print("That is not a correct choice")
 				continue
-				
+
 			if output_choice == 1:
 				shop_list.output()
 			elif output_choice == 2:
@@ -84,7 +110,6 @@ def shopping_menu():
 				shop_list.output_mode(1)
 		elif choice == 0:
 			return
-		print("\n--------------------\n")
 
 item_master = []
 save_file = False
@@ -94,7 +119,8 @@ if os.path.isfile(file_name): #if file exists, open it, else create it
 	wb = openpyxl.load_workbook(file_name)
 else:
 	wb = openpyxl.Workbook()
-	save_file = True
+	file_name = "data.xlsx"
+	wb.create_sheet(0, 'Data')
 
 if save_file:
 	wb.save(file_name)
@@ -108,7 +134,8 @@ while loop:
 	print("What would you like to do?")
 	print("\t1. Add an item")
 	print("\t2. Start a new shopping list")
-	print("\t3. Output item list")
+	print("\t3. Load a shopping list")
+	print("\t4. Output item list")
 	print("\t0. Quit")
 	#load a shopping list?
 	try:
@@ -120,10 +147,16 @@ while loop:
 	if choice == 1:
 		add_item_to_master()
 	elif choice == 2:
-		shopping_menu()
+		shop_list = shopping_list()
+		shopping_menu(shop_list)
 	elif choice == 3:
+		shop_list = load_shop_list()
+		if shop_list is None:
+			continue
+		shopping_menu(shop_list)
+	elif choice == 4:
 		output_items(item_master)
 	elif choice == 0:
-		#save data here
+		wb.save(file_name)
 		loop = False
 	print("\n--------------------\n")
