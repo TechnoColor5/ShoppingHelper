@@ -3,6 +3,7 @@ from classes.shopping_list import shopping_list
 from termcolor import colored, cprint
 import openpyxl
 import os.path
+import tkinter as tk
 
 def check_item(item_name, item_price):
 	add = True
