@@ -138,9 +138,12 @@ if os.path.isfile(file_name): #if file exists, open it, else create it
 	#load all of the sheets in wb
 	for sheet in wb:
 		if sheet.title == 'Data':
+			data_sheet = True
 			read_wb(sheet)
 		else:
 			list_master.append(load_shop_list(sheet))
+	if not data_sheet:
+		cprint("'Data' sheet could not be found! Quitting...", 'red', attrs['bold'])
 else:
 	cprint("File not found, creating new file with name " + file_name, 'red')
 	wb = openpyxl.Workbook()
