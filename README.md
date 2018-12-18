@@ -13,7 +13,7 @@ ShoppingHelper collects its data from the user inputting the name of a .xlsx fil
 
 ![example image](/images/img1.png)
 
-If the file you enter 
+If the file you enter does not exist, a new one will be made.
 
 ## Saving/Loading Shopping Lists
 Shopping lists are saved/loaded from the same data file as used in the beginning of running ShoppingHelper. When saved, the list will be added as another sheet with the name "List#" (# being a number). When loading a shopping list, the program will just ask for the *exact* name of the sheet that the list is housed under.
