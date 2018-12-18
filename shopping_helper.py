@@ -1,7 +1,6 @@
 from classes.item import item
-from classes.receipt import receipt
 from classes.shopping_list import shopping_list
-import datetime
+from termcolor import colored, cprint
 import openpyxl
 import os.path
 
@@ -37,14 +36,14 @@ def add_to_shop_list(shop_list):
 		if i.name == name:
 			shop_list.add_item(i)
 			return
-	print("Item not found")
+	cprint("Item not found", 'red', attrs=['bold'])
 
 def remove_from_shop_list(shop_list):
 	name = input("Please enter the item name: ")
 	shop_list.remove_item(i)
 
 def save_shop_list(shop_list):
-	sheet_name = "List" + str(len(wb.worksheets) + 1)
+	sheet_name = shop_list.name
 	sheet = wb.create_sheet(sheet_name)
 	item_list = shop_list.item_list
 
@@ -57,7 +56,7 @@ def load_shop_list():
 	try:
 		sheet = wb[sheet_name];
 	except:
-		print("That list does not exist")
+		cprint("That list does not exist", 'red', attrs=['bold'])
 		return None
 	end = 'B' + str(sheet.max_row)
 	for row in sheet["A1":end]:
@@ -71,19 +70,19 @@ def load_shop_list():
 
 def shopping_menu(shop_list):
 	while True:
-		print("Now editing shopping list:")
-		print("\t1. Add item to list")
-		print("\t2. Remove item from list")
-		print("\t3. Save list")
-		print("\t4. Output list")
-		print("\t0. Go Back")
+		cprint("\tNow editing " + shop_list.name + ":", attrs=['bold'])
+		print("\t\t1. Add item to list")
+		print("\t\t2. Remove item from list")
+		print("\t\t3. Save list to data file")
+		print("\t\t4. Output list")
+		print("\t\t0. Go Back\n")
 
 		try:
 			choice = eval(input("Please enter your choice: "))
 		except:
-			print("That is not a correct choice")
+			cprint("That is not a correct choice", 'red', attrs=['bold'])
 			continue
-		print("\n--------------------\n")
+			cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
 		if choice == 1:
 			add_to_shop_list(shop_list)
 		elif choice == 2:
@@ -91,15 +90,15 @@ def shopping_menu(shop_list):
 		elif choice == 3:
 			save_shop_list(shop_list)
 		elif choice == 4:
-			print("Which do you want:")
-			print("\t1. Average prices")
-			print("\t2. Maximum prices")
-			print("\t3. Minimum prices")
+			cprint("\tWhich do you want:", attrs=['bold'])
+			print("\t\t1. Average prices")
+			print("\t\t2. Maximum prices")
+			print("\t\t3. Minimum prices\n")
 			try:
 				output_choice = eval(input("Please enter your choice: "))
-				print("\n--------------------\n")
+				cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
 			except:
-				print("That is not a correct choice")
+				cprint("That is not a correct choice", 'red', attrs=['bold'])
 				continue
 
 			if output_choice == 1:
@@ -110,53 +109,62 @@ def shopping_menu(shop_list):
 				shop_list.output_mode(1)
 		elif choice == 0:
 			return
+		cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
+
+def list_lists():
+	print("Now showing all shopping lists: ")
+	print("\tTOTAL" + "\t NAME")
+	for l in list_master:
+		print("\t" + str(l.avg_total) + "\t" + l.name)
 
 item_master = []
+list_master = []
 save_file = False
 
-file_name = input("Please enter data file name: ")
+file_name = input("\nPlease enter data file name: ")
 if os.path.isfile(file_name): #if file exists, open it, else create it
 	wb = openpyxl.load_workbook(file_name)
 else:
+	cprint("File not found, creating new file with name " + file_name, 'red')
 	wb = openpyxl.Workbook()
 	file_name = "data.xlsx"
 	wb.create_sheet(0, 'Data')
 
-if save_file:
-	wb.save(file_name)
-
 sheet = wb['Data']
 read_wb(sheet)
-output_items(item_master)
-
+cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
 loop = True
 while loop:
-	print("What would you like to do?")
-	print("\t1. Add an item")
-	print("\t2. Start a new shopping list")
-	print("\t3. Load a shopping list")
-	print("\t4. Output item list")
-	print("\t0. Quit")
-	#load a shopping list?
+	cprint("\tWhat would you like to do?", attrs=['bold'])
+	print("\t\t1. Add an item")
+	print("\t\t2. Create a new shopping list")
+	print("\t\t3. Load a shopping list from data file")
+	print("\t\t4. Show all Shopping Lists")
+	print("\t\t5. Output master item list")
+	cprint("\t\t0. Quit\n", 'red')
 	try:
 		choice = eval(input("Please enter your choice: "))
 	except:
-		print("That is not a correct choice")
+		cprint("That is not a correct choice", 'red', attrs=['bold'])
 		continue
-	print("\n--------------------\n")
+	cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
 	if choice == 1:
 		add_item_to_master()
 	elif choice == 2:
 		shop_list = shopping_list()
+		shop_list.name = input("What would you like to name your list? ")
+		list_master.append(shop_list)
 		shopping_menu(shop_list)
 	elif choice == 3:
 		shop_list = load_shop_list()
-		if shop_list is None:
-			continue
-		shopping_menu(shop_list)
+		if shop_list is not None:
+			shopping_menu(shop_list)
 	elif choice == 4:
+		list_lists()
+	elif choice == 5:
 		output_items(item_master)
 	elif choice == 0:
+		print("Thank you for using ShoppingHelper!")
 		wb.save(file_name)
 		loop = False
-	print("\n--------------------\n")
+	cprint("\n\t--------------------\n", 'green' , attrs=['bold'])

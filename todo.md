@@ -1,3 +1,0 @@
--tell user if item was not found when loading list
--colors?
--stop listing items as they are added

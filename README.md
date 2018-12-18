@@ -11,6 +11,9 @@ ShoppingHelper is a tool that helps you estimate how much you will spend when yo
 ShoppingHelper collects its data from the user inputting the name of a .xlsx file that has a sheet named 'Data'. The file should be set up so that the name of the item is in column A and the price is in columb B. For example:
 
 ![example image](/images/img1.png)
+
+If the file you enter 
+
 ## Saving/Loading Shopping Lists
 Shopping lists are saved/loaded from the same data file as used in the beginning of running ShoppingHelper. When saved, the list will be added as another sheet with the name "List#" (# being a number). When loading a shopping list, the program will just ask for the *exact* name of the sheet that the list is housed under.
 

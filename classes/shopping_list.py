@@ -5,6 +5,7 @@ class shopping_list:
 	max_total = 0
 	min_total = 0
 	avg_total = 0
+	name = ""
 
 	def add_item(self, input_item):
 		self.item_list.append(input_item)
