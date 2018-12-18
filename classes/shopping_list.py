@@ -1,11 +1,13 @@
 from .item import item
 
 class shopping_list:
-	item_list = []
-	max_total = 0
-	min_total = 0
-	avg_total = 0
-	name = ""
+
+	def __init__(self):
+		self.item_list = []
+		self.max_total = 0
+		self.min_total = 0
+		self.avg_total = 0
+		self.name = ""
 
 	def add_item(self, input_item):
 		self.item_list.append(input_item)

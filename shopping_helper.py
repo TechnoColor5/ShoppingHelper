@@ -42,22 +42,24 @@ def remove_from_shop_list(shop_list):
 	name = input("Please enter the item name: ")
 	shop_list.remove_item(i)
 
-def save_shop_list(shop_list):
-	sheet_name = shop_list.name
-	sheet = wb.create_sheet(sheet_name)
-	item_list = shop_list.item_list
+def save_shop_list(shop_list, wb):
+	sheet_list = wb.sheetnames
 
+	try:
+		idx = sheet_list.index(shop_list.name)
+		sheet = wb[shop_list.name]
+	except:
+		cprint("Sheet does not exist, adding sheet " + shop_list.name, 'red', attrs=['bold'])
+		sheet_name = shop_list.name
+		sheet = wb.create_sheet(sheet_name)
+
+	item_list = shop_list.item_list
 	for i in range(1, len(item_list) + 1):
 		sheet.cell(row=i, column=1, value=item_list[i - 1].name)
 
-def load_shop_list():
-	sheet_name = input("Please enter the name of the list: ")
+def load_shop_list(sheet):
 	shop_list = shopping_list()
-	try:
-		sheet = wb[sheet_name];
-	except:
-		cprint("That list does not exist", 'red', attrs=['bold'])
-		return None
+	shop_list.name = sheet.title
 	end = 'B' + str(sheet.max_row)
 	for row in sheet["A1":end]:
 		item_name = row[0].value;
@@ -67,6 +69,7 @@ def load_shop_list():
 				break
 
 	return shop_list
+
 
 def shopping_menu(shop_list):
 	while True:
@@ -90,7 +93,7 @@ def shopping_menu(shop_list):
 		elif choice == 3:
 			save_shop_list(shop_list)
 		elif choice == 4:
-			cprint("\tWhich do you want:", attrs=['bold'])
+			cprint("\n\tWhich do you want:", attrs=['bold'])
 			print("\t\t1. Average prices")
 			print("\t\t2. Maximum prices")
 			print("\t\t3. Minimum prices\n")
@@ -117,28 +120,39 @@ def list_lists():
 	for l in list_master:
 		print("\t" + str(l.avg_total) + "\t" + l.name)
 
+def save_file(wb):
+	cprint("Saving file...", 'green')
+	#saves all of the lists
+	for sl in list_master:
+		save_shop_list(sl, wb)
+
+	wb.save(file_name)
+
 item_master = []
 list_master = []
-save_file = False
 
 file_name = input("\nPlease enter data file name: ")
 if os.path.isfile(file_name): #if file exists, open it, else create it
 	wb = openpyxl.load_workbook(file_name)
+
+	#load all of the sheets in wb
+	for sheet in wb:
+		if sheet.title == 'Data':
+			read_wb(sheet)
+		else:
+			list_master.append(load_shop_list(sheet))
 else:
 	cprint("File not found, creating new file with name " + file_name, 'red')
 	wb = openpyxl.Workbook()
-	file_name = "data.xlsx"
-	wb.create_sheet(0, 'Data')
+	wb.create_sheet('Data', 0)
 
-sheet = wb['Data']
-read_wb(sheet)
 cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
 loop = True
 while loop:
 	cprint("\tWhat would you like to do?", attrs=['bold'])
 	print("\t\t1. Add an item")
 	print("\t\t2. Create a new shopping list")
-	print("\t\t3. Load a shopping list from data file")
+	print("\t\t3. Edit an existing shopping list")
 	print("\t\t4. Show all Shopping Lists")
 	print("\t\t5. Output master item list")
 	cprint("\t\t0. Quit\n", 'red')
@@ -152,19 +166,30 @@ while loop:
 		add_item_to_master()
 	elif choice == 2:
 		shop_list = shopping_list()
-		shop_list.name = input("What would you like to name your list? ")
+		while True:
+			list_name = input("What would you like to name your list? ")
+			good_name = True
+			for l in list_master:
+				if l.name == list_name:
+					cprint("A list already exists with that name", 'red')
+					good_name = False
+			if good_name:
+				shop_list.name = list_name
+				break
 		list_master.append(shop_list)
 		shopping_menu(shop_list)
 	elif choice == 3:
-		shop_list = load_shop_list()
-		if shop_list is not None:
-			shopping_menu(shop_list)
+		shop_list_input = input("Please enter the name of the list: ")
+		for l in list_master:
+			if l.name == shop_list_input:
+				shopping_menu(l)
+				break
 	elif choice == 4:
 		list_lists()
 	elif choice == 5:
 		output_items(item_master)
 	elif choice == 0:
-		print("Thank you for using ShoppingHelper!")
-		wb.save(file_name)
+		save_file(wb)
+		cprint("\tThank you for using ShoppingHelper!", 'magenta', attrs=['bold'])
 		loop = False
 	cprint("\n\t--------------------\n", 'green' , attrs=['bold'])
